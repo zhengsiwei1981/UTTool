@@ -188,7 +188,7 @@ namespace UTTool.Core.Generate
                     scope.RemoveItem(this.CurrentNode);
 
                     var method = this.GenerateContext.GetCurrentMethodScope();
-                    method.GenerateItems.RemoveAll(g => g.DescripterNode.Parent == this.CurrentNode || g.DescripterNode.Parent.Parent == this.CurrentNode);
+                    method?.GenerateItems.RemoveAll(g => g.DescripterNode.Parent == this.CurrentNode || g.DescripterNode.Parent.Parent == this.CurrentNode);
 
                     this.GenerateContext.Generate();
                     this.TreeNodeChangeAction(obj,e,Color.Black);
