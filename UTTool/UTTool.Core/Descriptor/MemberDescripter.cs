@@ -23,6 +23,8 @@ namespace UTTool.Core.Descriptor
             this.Name = type.Name;
             this.BaseType = type;
         }
+        public bool IsLoadFromExtenal { get; set; }
+        public bool IsMock { get; set; }
         /// <summary>
         /// 
         /// </summary>

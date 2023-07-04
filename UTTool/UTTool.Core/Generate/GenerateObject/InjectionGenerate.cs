@@ -22,7 +22,7 @@ namespace UTTool.Core.Generate.GenerateObject
         }
         public void Generate(GenerateContext generateContext)
         {
-            generateContext.Text.Append($"      _{this.DescripterNode.Name.Substring(1).GetFirstLowerString()} = new Mock<{this.DescripterNode.Name}>(MockBehavior.Loose);\r\n");
+            generateContext.Text.Append($"      _{this.DescripterNode.Name.Substring((this.DescripterNode as MemberDescripter).BaseType.IsInterface == true ? 1 : 0).GetFirstLowerString()} = new Mock<{this.DescripterNode.Name}>(MockBehavior.Loose);\r\n");
         }
     }
 }

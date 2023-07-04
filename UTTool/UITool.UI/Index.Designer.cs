@@ -114,8 +114,8 @@
             // 
             this.toolStripStatusLabel1.BackColor = System.Drawing.SystemColors.Control;
             this.toolStripStatusLabel1.Name = "toolStripStatusLabel1";
-            this.toolStripStatusLabel1.Size = new System.Drawing.Size(61, 17);
-            this.toolStripStatusLabel1.Text = "版本号 1.1";
+            this.toolStripStatusLabel1.Size = new System.Drawing.Size(70, 17);
+            this.toolStripStatusLabel1.Text = "版本号 1.1.1";
             // 
             // ofLoadFile
             // 

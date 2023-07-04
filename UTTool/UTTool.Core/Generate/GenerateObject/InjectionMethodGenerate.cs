@@ -25,11 +25,11 @@ namespace UTTool.Core.Generate.GenerateObject
             {
                 if (!IsVerify)
                 {
-                    generateContext.Text.Append($"      _{parent.DescripterNode.Name.Substring(1).GetFirstLowerString()}.Setup(obj => obj.{this.DescripterNode.Name}({SetItExperssion()})).{this.SetReturnParameters()}Verifiable();\r\n");
+                    generateContext.Text.Append($"      _{parent.DescripterNode.Name.Substring((parent.DescripterNode as MemberDescripter).BaseType.IsInterface == true ? 1 : 0).GetFirstLowerString()}.Setup(obj => obj.{this.DescripterNode.Name}({SetItExperssion()})).{this.SetReturnParameters()}Verifiable();\r\n");
                 }
                 else
                 {
-                    generateContext.Text.Append($"      _{parent.DescripterNode.Name.Substring(1).GetFirstLowerString()}.Verify(obj => obj.{this.DescripterNode.Name}({SetItExperssion()}),Times.Once);\r\n");
+                    generateContext.Text.Append($"      _{parent.DescripterNode.Name.Substring((parent.DescripterNode as MemberDescripter).BaseType.IsInterface == true ? 1 : 0).GetFirstLowerString()}.Verify(obj => obj.{this.DescripterNode.Name}({SetItExperssion()}),Times.Once);\r\n");
                 }
             }
         }

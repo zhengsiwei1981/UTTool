@@ -8,6 +8,7 @@ using UTTool.Core.Descriptor;
 using UTTool.Core.Generate.GenerateObject;
 using UTTool.Core.Extension;
 using static System.Formats.Asn1.AsnWriter;
+using UTTool.Core.Constructor;
 
 namespace UTTool.Core.Generate
 {
@@ -47,7 +48,7 @@ namespace UTTool.Core.Generate
             //         this.BasicAction(this.GenerateContext);
             //    })
             //});
-            this.DocumentObjectMaps.Add(node => node.NodeType == NodeType.Method && (node.Parent as MemberDescripter).IsInterface && this.GenerateContext.GetOrCreateSetUpScope().IsExists(node.Parent), new List<DocumentObject>()
+            this.DocumentObjectMaps.Add(node => node.NodeType == NodeType.Method && ((node.Parent as MemberDescripter)!.IsInterface || (node.Parent as MemberDescripter)!.IsMock) && this.GenerateContext.GetOrCreateSetUpScope().IsExists(node.Parent), new List<DocumentObject>()
             {
                 new DocumentObject("注入方法",(obj,e)=>{
                     if (this.CurrentNode == null)
@@ -76,7 +77,8 @@ namespace UTTool.Core.Generate
                     }
                 })
             });
-            this.DocumentObjectMaps.Add(node => node.NodeType == NodeType.Method && (node.Parent as MemberDescripter).IsInterface == false && this.GenerateContext.GetOrCreateSetUpScope().IsExists(node.Parent), new List<DocumentObject>()
+            this.DocumentObjectMaps.Add(node => node.NodeType == NodeType.Method && ((node.Parent as MemberDescripter)!.IsInterface == false &&
+            (node.Parent as MemberDescripter)!.IsMock == false) && this.GenerateContext.GetOrCreateSetUpScope().IsExists(node.Parent), new List<DocumentObject>()
             {
                 new DocumentObject("生成测试方法",(obj,e)=>{
                     var method = this.GenerateContext.GetOrCreateMethodScope(this.CurrentNode);
@@ -136,7 +138,7 @@ namespace UTTool.Core.Generate
                 })
             });
             //Member map
-            this.DocumentObjectMaps.Add(node => node.NodeType == NodeType.Member && (node as MemberDescripter).IsInterface, new List<DocumentObject>()
+            this.DocumentObjectMaps.Add(node => node.NodeType == NodeType.Member && (node as MemberDescripter)!.IsInterface, new List<DocumentObject>()
             {
                 new DocumentObject("接口注入",(obj,e) =>{
                     if (this.CurrentNode == null)
@@ -154,23 +156,29 @@ namespace UTTool.Core.Generate
                     this.BasicAction(this.GenerateContext);
                 })
             });
-            this.DocumentObjectMaps.Add(node => node.NodeType == NodeType.Member && (node as MemberDescripter).IsInterface == false && (node as MemberDescripter).BaseType.IsAbstract == false, new List<DocumentObject>()
+            this.DocumentObjectMaps.Add(node => node.NodeType == NodeType.Member && (node as MemberDescripter)!.IsInterface == false && (node as MemberDescripter)!.BaseType.IsAbstract == false, new List<DocumentObject>()
             {
                 new DocumentObject("实例化",(obj,e) =>{
                     if (this.CurrentNode == null)
                     {
                          return;
                     }
-                   this.PreLoad();
-                   var blankScope = this.GenerateContext.GetOrCreateBlankScope();
-                   blankScope.AttachGenerateItem(new BlankMoqInstanceGenerate(this.CurrentNode));
-
-                    var scope = this.GenerateContext.GetOrCreateSetUpScope();
-                    scope.AttachGenerateItem(new InstanceGenerate(this.CurrentNode));
-
+                    if (this.GenerateContext.GetOrCreateSetUpScope().GenerateItems.Exists(g => g.DescripterNode.Equals(this.CurrentNode)))
+                    {
+                        return;
+                    }
+                    var constructorSelector = new ConstructorSelector(this.GenerateContext.DescripterNode as MemberDescripter);
+                    var pList = ParameterMappingList.CreateParameterMappingList(constructorSelector.Preferential(),this.GenerateContext);
+                    pList.Initialize();
                     this.GenerateContext.Generate();
 
-                    this.TreeNodeChangeAction(obj,e,Color.Blue);
+                    var blankScope = this.GenerateContext.GetOrCreateBlankScope();
+                    blankScope.AttachGenerateItem(new BlankMoqInstanceGenerate(this.CurrentNode));
+
+                    var scope = this.GenerateContext.GetOrCreateSetUpScope();
+                    scope.AttachGenerateItem(new InstanceGenerate(this.CurrentNode,pList,constructorSelector));
+
+                    this.GenerateContext.Generate();
                     this.BasicAction(this.GenerateContext);
                 })
             });
@@ -232,51 +240,6 @@ namespace UTTool.Core.Generate
             }
             var map = this.DocumentObjectMaps.ToList().Where(kv => kv.Key(this.CurrentNode)).ToList();
             return map.SelectMany(m => m.Value).ToList();
-        }
-        /// <summary>
-        /// 
-        /// </summary>
-        private void PreLoad()
-        {
-            var member = this.CurrentNode as MemberDescripter;
-            var targetConstructor = member?.BaseType.GetConstructors().Where(c => c.GetParameters().Count() != 0).FirstOrDefault();
-
-            if (targetConstructor != null)
-            {
-                var root = this.CurrentNode.GetRoot();
-
-                var setupScope = this.GenerateContext.GetOrCreateSetUpScope();
-                var blankScope = this.GenerateContext.GetOrCreateBlankScope();
-                var injectedObjets = setupScope.GenerateItems.Where(g => g.DescripterNode.NodeType == NodeType.Member).ToList();
-
-                var parameters = targetConstructor.GetParameters().ToList();
-                parameters.ForEach(p =>
-                {
-                    if (!p.ParameterType.IsValueType)
-                    {
-                        if (!injectedObjets.Exists(io => (io.DescripterNode as MemberDescripter).BaseType == p.ParameterType))
-                        {
-                            var desc = root.Find(d => d.NodeType == NodeType.Member && ((MemberDescripter)d).BaseType == p.ParameterType);
-                            if (desc != null)
-                            {
-                                blankScope.AttachGenerateItem(new BlankMoqInjectionGenerate(desc));
-                                setupScope.AttachGenerateItem(new InjectionGenerate(desc));
-                            }
-                            else
-                            {
-                                if (p.ParameterType.IsInterface)
-                                {
-                                    var memberDescripter = new MemberDescripter(p.ParameterType) { NodeType = NodeType.Member };
-                                    memberDescripter.Load(new DecoraterContext() { AssemblyDescriptor = root });
-
-                                    blankScope.AttachGenerateItem(new BlankMoqInjectionGenerate(memberDescripter));
-                                    setupScope.AttachGenerateItem(new InjectionGenerate(memberDescripter));
-                                }
-                            }
-                        }
-                    }
-                });
-            }
         }
         /// <summary>
         /// 
