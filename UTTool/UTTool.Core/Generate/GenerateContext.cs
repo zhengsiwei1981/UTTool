@@ -4,6 +4,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml.Linq;
 using UTTool.Core.Descriptor;
 
 namespace UTTool.Core.Generate
@@ -129,4 +130,5 @@ namespace UTTool.Core.Generate
             return (BlankScope)this.Scopes.Where(s => s.GetType() == typeof(BlankScope)).First();
         }
     }
+
 }

@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
+using Microsoft.VisualBasic.Devices;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -15,6 +16,7 @@ using System.Xml.Linq;
 using UTTool.Core;
 using UTTool.Core.Descriptor;
 using UTTool.Core.Generate;
+using UTTool.Core.Generate.Batch;
 
 namespace UITool.UI
 {
@@ -24,6 +26,7 @@ namespace UITool.UI
         DocumentGenerater documentGenerater = new DocumentGenerater();
         TreeNode CurrentEventNode = null;
         QueryThreadDispatch queryThreadDispatch = null;
+        List<DescripterNode> BatchList = null;
         /// <summary>
         /// 
         /// </summary>
@@ -35,45 +38,70 @@ namespace UITool.UI
 
             documentGenerater.BasicAction = context =>
             {
-                this.textBox1.Text = context.Text.ToString();
-                var nodes = context.GetSetupNodes();
-
-                this.trvObjectList.Nodes.Clear();
-
-                var objectNode = new TreeNode("Object");
-                var interfaceNode = new TreeNode("Interface");
-
-                nodes.Where(n => ((MemberDescripter)n).IsInterface == false).ToList().ForEach(node =>
+                if (context is FullGenerateContext)
                 {
-                    var oNode = new DescripterTreeNode(node.Name) { DescripterNode = node };
-                    if (node.Children != null)
+                    if ((context as FullGenerateContext).IsReadForBatch == false)
                     {
-                        node.Children.ForEach(child =>
+                        System.IO.File.WriteAllText(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Text", context.DescripterNode.Name + "_Test.cs"), context.Text.ToString());
+                        MessageBox.Show("generate done");
+                    }
+                    else
+                    {
+                        this.pnlCheckList.Visible = this.pnlCheckList.Visible == false ? true : true;
+                        this.pnlCheckList.Location = Cursor.Position;
+                        this.checkList.Items.Clear();
+
+                        this.BatchList = (context as FullGenerateContext).DescripterNode.Children.
+                        Where(c => c.NodeType == NodeType.Member && (c as MemberDescripter).IsInterface == false && (c as MemberDescripter).BaseType.IsAbstract == false).ToList();
+
+                        this.BatchList.ForEach(item =>
                         {
-                            var cNode = new DescripterTreeNode(child.Name) { DescripterNode = child };
-                            oNode.Nodes.Add(cNode);
+                            this.checkList.Items.Add(item.Name);
                         });
                     }
-                    objectNode.Nodes.Add(oNode);
-                });
-                nodes.Where(n => ((MemberDescripter)n).IsInterface == true).ToList().ForEach(node =>
+                }
+                else
                 {
-                    var iNode = new DescripterTreeNode(node.Name) { DescripterNode = node };
-                    if (node.Children != null)
-                    {
-                        node.Children.ForEach(child =>
-                        {
-                            var cNode = new DescripterTreeNode(child.Name) { DescripterNode = child };
-                            iNode.Nodes.Add(cNode);
-                        });
-                    }
-                    interfaceNode.Nodes.Add(iNode);
-                });
+                    this.textBox1.Text = context.Text.ToString();
+                    var nodes = context.GetSetupNodes();
 
-                this.trvObjectList.Nodes.Add(objectNode);
-                this.trvObjectList.Nodes.Add(interfaceNode);
-                objectNode.Expand();
-                interfaceNode.Expand();
+                    this.trvObjectList.Nodes.Clear();
+
+                    var objectNode = new TreeNode("Object");
+                    var interfaceNode = new TreeNode("Interface");
+
+                    nodes.Where(n => ((MemberDescripter)n).IsInterface == false).ToList().ForEach(node =>
+                    {
+                        var oNode = new DescripterTreeNode(node.Name) { DescripterNode = node };
+                        if (node.Children != null)
+                        {
+                            node.Children.ForEach(child =>
+                            {
+                                var cNode = new DescripterTreeNode(child.Name) { DescripterNode = child };
+                                oNode.Nodes.Add(cNode);
+                            });
+                        }
+                        objectNode.Nodes.Add(oNode);
+                    });
+                    nodes.Where(n => ((MemberDescripter)n).IsInterface == true).ToList().ForEach(node =>
+                    {
+                        var iNode = new DescripterTreeNode(node.Name) { DescripterNode = node };
+                        if (node.Children != null)
+                        {
+                            node.Children.ForEach(child =>
+                            {
+                                var cNode = new DescripterTreeNode(child.Name) { DescripterNode = child };
+                                iNode.Nodes.Add(cNode);
+                            });
+                        }
+                        interfaceNode.Nodes.Add(iNode);
+                    });
+
+                    this.trvObjectList.Nodes.Add(objectNode);
+                    this.trvObjectList.Nodes.Add(interfaceNode);
+                    objectNode.Expand();
+                    interfaceNode.Expand();
+                }
             };
             documentGenerater.TreeNodeChangeAction = (obj, e, c) =>
             {
@@ -469,6 +497,50 @@ namespace UITool.UI
                     }
                 }
             }
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void btnClose_Click(object sender, EventArgs e)
+        {
+            this.pnlCheckList.Visible = false;
+            this.checkList.Items.Clear();
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void btnAllSelect_Click(object sender, EventArgs e)
+        {
+            for (int i = 0; i < this.checkList.Items.Count; i++)
+            {
+                this.checkList.SetItemChecked(i, this.btnAllSelect.Text == "全选");
+            }
+            this.btnAllSelect.Text = this.btnAllSelect.Text == "全选" ? "取消" : "全选";
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void btnGenerate_Click(object sender, EventArgs e)
+        {
+            if (this.BatchList == null)
+            {
+                MessageBox.Show("没有任何生成项！");
+                return;
+            }
+            var checkItems = this.BatchList.Where(d => this.checkList.CheckedItems.Contains(d.Name)).ToList();
+            var contextList = FullPublicGenerate.BatchGenerate(this.BatchList);
+
+            contextList.ForEach(context =>
+            {
+                System.IO.File.WriteAllText(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Text", context.DescripterNode.Name + "_Test.cs"), context.Text.ToString());
+            });
+            MessageBox.Show("generate done");
         }
     }
     /// <summary>

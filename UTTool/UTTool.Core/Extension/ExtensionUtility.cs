@@ -51,6 +51,8 @@ namespace UTTool.Core.Extension
             var str = typeof(ExtensionUtility).GetMethod("GetDefaultValue").MakeGenericMethod(new Type[] { type }).Invoke(null, null);
             return str.ToString();
         }
+        //public static string GetGenericType(Type type)
+        //{ }
         /// <summary>
         /// 
         /// </summary>
@@ -58,43 +60,56 @@ namespace UTTool.Core.Extension
         /// <returns></returns>
         public static string GetDefaultValue<T>()
         {
-            Type realType = null;
-            if (typeof(T).IsGenericType && typeof(T).GetGenericTypeDefinition().IsAssignableFrom(typeof(Nullable<>)))
+            if (typeof(T).IsValueType || typeof(T) == typeof(string) || (typeof(T).IsGenericType && typeof(T).GetGenericTypeDefinition().IsAssignableFrom(typeof(Nullable<>))))
             {
-                realType = typeof(T).GetGenericArguments()[0];
+                return StringFormat(typeof(T));
             }
-            var val = default(T);
-            if (val == null)
+            return "null";
+        }
+        private static string StringFormat(Type realType)
+        {
+            //是nullable类型
+            if (realType.IsGenericType)
             {
-                if (typeof(T) == typeof(string))
+                realType = realType.GetGenericArguments()[0];
+            }
+            if (realType != null)
+            {
+                if (realType == typeof(bool))
+                {
+                    return default(bool).ToString().ToLower();
+                }
+                if (realType == typeof(int))
+                {
+                    return default(int).ToString();
+                }
+                if (realType == typeof(decimal))
+                {
+                    return default(decimal).ToString();
+                }
+                if (realType == typeof(float))
+                {
+                    return default(float).ToString();
+                }
+                if (realType == typeof(DateTime))
+                {
+                    //return $"\"{DateTime.Now.ToShortDateString()}\"";
+                    return "DateTime.Now";
+                }
+                if (realType == typeof(Guid))
+                {
+                    return $"Guid.NewGuid()";
+                }
+                if (realType == typeof(string))
                 {
                     return "\"\"";
                 }
-                else
+                if (realType == typeof(Enum))
                 {
-                    if (realType != null)
-                    {
-                        if (realType == typeof(int))
-                        {
-                            return default(int).ToString();
-                        }
-                        if (realType == typeof(decimal))
-                        {
-                            return default(decimal).ToString();
-                        }
-                        if (realType == typeof(float))
-                        {
-                            return default(float).ToString();
-                        }
-                        if (realType == typeof(DateTime))
-                        {
-                            return $"\"{DateTime.Now.ToShortDateString()}\"";
-                        }
-                    }
-                    return "null";
+                    return default(Enum)!.ToString();
                 }
             }
-            return val.ToString();
+            return "null";
         }
     }
 }

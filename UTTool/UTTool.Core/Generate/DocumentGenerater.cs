@@ -9,6 +9,7 @@ using UTTool.Core.Generate.GenerateObject;
 using UTTool.Core.Extension;
 using static System.Formats.Asn1.AsnWriter;
 using UTTool.Core.Constructor;
+using UTTool.Core.Generate.Batch;
 
 namespace UTTool.Core.Generate
 {
@@ -48,6 +49,15 @@ namespace UTTool.Core.Generate
             //         this.BasicAction(this.GenerateContext);
             //    })
             //});
+            this.DocumentObjectMaps.Add(node => node.NodeType == NodeType.Director, new List<DocumentObject>()
+            {
+                new DocumentObject("批量生成",(obj,e) =>
+                {
+                    var context = new FullGenerateContext(){ DescripterNode = this.CurrentNode, IsReadForBatch = true};
+                    BasicAction(context);
+                })
+            });
+
             this.DocumentObjectMaps.Add(node => node.NodeType == NodeType.Method && ((node.Parent as MemberDescripter)!.IsInterface || (node.Parent as MemberDescripter)!.IsMock) && this.GenerateContext.GetOrCreateSetUpScope().IsExists(node.Parent), new List<DocumentObject>()
             {
                 new DocumentObject("注入方法",(obj,e)=>{
@@ -180,6 +190,15 @@ namespace UTTool.Core.Generate
 
                     this.GenerateContext.Generate();
                     this.BasicAction(this.GenerateContext);
+                }),
+                new DocumentObject("生成文件",(obj,e)=>{
+                    if (this.CurrentNode == null)
+                    {
+                         return;
+                    }
+                    FullGenerater fullGenerater = new FullGenerater(this.CurrentNode);
+                    fullGenerater.Generate();
+                     this.BasicAction(fullGenerater.GenerateContext);
                 })
             });
             this.DocumentObjectMaps.Add(node => node.NodeType == NodeType.Member && this.GenerateContext.GetOrCreateSetUpScope().IsExists(node), new List<DocumentObject>()
