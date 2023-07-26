@@ -104,9 +104,13 @@ namespace UTTool.Core.Extension
                 {
                     return "\"\"";
                 }
-                if (realType == typeof(Enum))
+                if (realType.IsEnum)
                 {
-                    return default(Enum)!.ToString();
+                    var field = realType.GetFields().Where(f => f.FieldType == realType).FirstOrDefault();
+                    if (field != null)
+                    {
+                        return $"{realType.Name}.{field.Name}";
+                    }
                 }
             }
             return "null";
