@@ -64,7 +64,8 @@ namespace UTTool.Core
                     }
                     else
                     {
-                        throw new LoadAssemblyException("Couldn't not find dependecy dll in specified directory") { TargetAssembly = assName};
+                        var dllPath2 = $"{new DirectoryInfo(args.RequestingAssembly.Location).Parent.FullName}\\{assName}.dll";
+                        return Assembly.LoadFrom(dllPath2);
                     }
                     //throw new LoadAssemblyException(string.Format("didn't find config element with Name : {0}", nameSplitVal[0])) { ExceptionType = ExceptionType.NotFindConfig, AssemblyName = nameSplitVal[0] };
                 }
