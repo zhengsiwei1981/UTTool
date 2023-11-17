@@ -65,9 +65,12 @@ namespace UTTool.Core
                     else
                     {
                         var dllPath2 = $"{new DirectoryInfo(args.RequestingAssembly.Location).Parent.FullName}\\{assName}.dll";
-                        return Assembly.LoadFrom(dllPath2);
+                        if (File.Exists(dllPath2))
+                        {
+                            return Assembly.LoadFrom(dllPath2);
+                        }
                     }
-                    //throw new LoadAssemblyException(string.Format("didn't find config element with Name : {0}", nameSplitVal[0])) { ExceptionType = ExceptionType.NotFindConfig, AssemblyName = nameSplitVal[0] };
+                    throw new LoadAssemblyException(string.Format("didn't find config element with Name : {0}", assName)) { ExceptionType = ExceptionType.NotFindConfig, AssemblyName = assName };
                 }
             }
             else

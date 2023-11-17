@@ -534,7 +534,7 @@ namespace UITool.UI
                 return;
             }
             var checkItems = this.BatchList.Where(d => this.checkList.CheckedItems.Contains(d.Name)).ToList();
-            var contextList = FullPublicGenerate.BatchGenerate(this.BatchList);
+            var contextList = FullPublicGenerate.BatchGenerate(checkItems);
 
             contextList.ForEach(context =>
             {
