@@ -105,7 +105,7 @@ namespace UTTool.Core.Generate.GenerateObject
             }
             else
             {
-                if (property.PropertyType.IsClass)
+                if (property.PropertyType.IsClass )
                 {
                     this.OutputClass(sb, sign, property);
                 }
@@ -115,7 +115,7 @@ namespace UTTool.Core.Generate.GenerateObject
         private void OutputClass(StringBuilder sb, string sign, PropertyInfo propertyInfo)
         {
             var index = 0;
-            sb.Append($"            {propertyInfo.Name} = ");
+            sb.Append($"            {propertyInfo.Name} = new {propertyInfo.PropertyType.Name}()");
             sb.Append(Environment.NewLine);
             sb.Append("            {");
             sb.Append(Environment.NewLine);
