@@ -64,7 +64,15 @@ namespace UTTool.Core
                     }
                     else
                     {
-                        var dllPath2 = $"{new DirectoryInfo(args.RequestingAssembly.Location).Parent.FullName}\\{assName}.dll";
+                        string dllPath2 = "";
+                        if (System.Runtime.InteropServices.RuntimeInformation.FrameworkDescription == ".NET Framework 4.8.4645.0")
+                        {
+                            dllPath2 = $"{AssemblyLoader.BasePath}\\{assName}.dll";
+                        }
+                        else
+                        {
+                            dllPath2 = $"{new DirectoryInfo(args.RequestingAssembly.Location).Parent.FullName}\\{assName}.dll";
+                        }
                         if (File.Exists(dllPath2))
                         {
                             return Assembly.LoadFrom(dllPath2);

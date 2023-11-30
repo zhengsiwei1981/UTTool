@@ -19,7 +19,7 @@ namespace UTTool.Core.Extension
             {
                 return nameSpace;
             }
-            return nameSpace.Split(new char[] { '.' }).LastOrDefault()!;
+            return nameSpace.Split(new char[] { '.' }).LastOrDefault();
         }
         /// <summary>
         /// 
@@ -32,7 +32,7 @@ namespace UTTool.Core.Extension
             {
                 return nameSpace;
             }
-            return nameSpace.Split(new char[] { '.' }).FirstOrDefault()!;
+            return nameSpace.Split(new char[] { '.' }).FirstOrDefault();
         }
         /// <summary>
         /// 

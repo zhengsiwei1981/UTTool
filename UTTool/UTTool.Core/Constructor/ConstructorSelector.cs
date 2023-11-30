@@ -37,10 +37,10 @@ namespace UTTool.Core.Constructor
                 var con = this.Constructors.Where(c => c.GetParameters().Count() > 0).FirstOrDefault();
                 if (con == null)
                 {
-                    return this.Constructors.FirstOrDefault()!;
+                    return this.Constructors.FirstOrDefault();
                 }
             }
-            return this.Constructors.FirstOrDefault()!;
+            return this.Constructors.FirstOrDefault();
         }
     }
 }

@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Reflection.Metadata;
 using System.Text;
 using System.Threading.Tasks;
 using UTTool.Core.Descriptor;
@@ -58,7 +57,7 @@ namespace UTTool.Core.Constructor
             if (constructorInfo == null)
                 return pList;
             var parameters = constructorInfo?.GetParameters().ToList();
-            parameters!.ForEach(p =>
+            parameters.ForEach(p =>
             {
                 pList.Add(p, generateContext.DescripterNode, generateContext);
             });

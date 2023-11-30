@@ -17,7 +17,7 @@ namespace UTTool.Core.Generate.GenerateObject
         public DescripterNode DescripterNode { get; set; }
         public void Generate(GenerateContext generateContext)
         {
-            generateContext.Text.Append($" private Mock<{this.DescripterNode.Name}> _{this.DescripterNode.Name.Substring((this.DescripterNode as MemberDescripter)!.BaseType.IsInterface == true ? 1 : 0).GetFirstLowerString()};\r\n");
+            generateContext.Text.Append($" private Mock<{this.DescripterNode.Name}> _{this.DescripterNode.Name.Substring((this.DescripterNode as MemberDescripter).BaseType.IsInterface == true ? 1 : 0).GetFirstLowerString()};\r\n");
         }
     }
 }

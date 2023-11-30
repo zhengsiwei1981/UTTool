@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 using UTTool.Core.Descriptor;
 using UTTool.Core.Generate.GenerateObject;
 using UTTool.Core.Extension;
-using static System.Formats.Asn1.AsnWriter;
 using UTTool.Core.Constructor;
 using UTTool.Core.Generate.Batch;
 
@@ -15,9 +14,9 @@ namespace UTTool.Core.Generate
 {
     public class DocumentGenerater
     {
-        internal Dictionary<Func<DescripterNode, bool>, List<DocumentObject>> DocumentObjectMaps = new();
-        public Action<GenerateContext>? BasicAction;
-        public Action<object, EventArgs, Color>? TreeNodeChangeAction;
+        internal Dictionary<Func<DescripterNode, bool>, List<DocumentObject>> DocumentObjectMaps = new Dictionary<Func<DescripterNode, bool>, List<DocumentObject>>();
+        public Action<GenerateContext> BasicAction;
+        public Action<object, EventArgs, Color> TreeNodeChangeAction;
         public GenerateContext GenerateContext {
             get; set;
         }
@@ -58,7 +57,7 @@ namespace UTTool.Core.Generate
                 })
             });
 
-            this.DocumentObjectMaps.Add(node => node.NodeType == NodeType.Method && ((node.Parent as MemberDescripter)!.IsInterface || (node.Parent as MemberDescripter)!.IsMock) && this.GenerateContext.GetOrCreateSetUpScope().IsExists(node.Parent), new List<DocumentObject>()
+            this.DocumentObjectMaps.Add(node => node.NodeType == NodeType.Method && ((node.Parent as MemberDescripter).IsInterface || (node.Parent as MemberDescripter).IsMock) && this.GenerateContext.GetOrCreateSetUpScope().IsExists(node.Parent), new List<DocumentObject>()
             {
                 new DocumentObject("注入方法",(obj,e)=>{
                     if (this.CurrentNode == null)
@@ -87,8 +86,8 @@ namespace UTTool.Core.Generate
                     }
                 })
             });
-            this.DocumentObjectMaps.Add(node => node.NodeType == NodeType.Method && ((node.Parent as MemberDescripter)!.IsInterface == false &&
-            (node.Parent as MemberDescripter)!.IsMock == false) && this.GenerateContext.GetOrCreateSetUpScope().IsExists(node.Parent), new List<DocumentObject>()
+            this.DocumentObjectMaps.Add(node => node.NodeType == NodeType.Method && ((node.Parent as MemberDescripter).IsInterface == false &&
+            (node.Parent as MemberDescripter).IsMock == false) && this.GenerateContext.GetOrCreateSetUpScope().IsExists(node.Parent), new List<DocumentObject>()
             {
                 new DocumentObject("生成测试方法",(obj,e)=>{
                     var method = this.GenerateContext.GetOrCreateMethodScope(this.CurrentNode);
@@ -148,7 +147,7 @@ namespace UTTool.Core.Generate
                 })
             });
             //Member map
-            this.DocumentObjectMaps.Add(node => node.NodeType == NodeType.Member && (node as MemberDescripter)!.IsInterface, new List<DocumentObject>()
+            this.DocumentObjectMaps.Add(node => node.NodeType == NodeType.Member && (node as MemberDescripter).IsInterface, new List<DocumentObject>()
             {
                 new DocumentObject("接口注入",(obj,e) =>{
                     if (this.CurrentNode == null)
@@ -166,7 +165,7 @@ namespace UTTool.Core.Generate
                     this.BasicAction(this.GenerateContext);
                 })
             });
-            this.DocumentObjectMaps.Add(node => node.NodeType == NodeType.Member && (node as MemberDescripter)!.IsInterface == false && (node as MemberDescripter)!.BaseType.IsAbstract == false, new List<DocumentObject>()
+            this.DocumentObjectMaps.Add(node => node.NodeType == NodeType.Member && (node as MemberDescripter).IsInterface == false && (node as MemberDescripter).BaseType.IsAbstract == false, new List<DocumentObject>()
             {
                 new DocumentObject("实例化",(obj,e) =>{
                     if (this.CurrentNode == null)

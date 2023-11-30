@@ -15,7 +15,7 @@ namespace UTTool.Core.Constructor.Render
             var p = parameterMapping as ReferenceParameterMapping;
             if (p != null && !p.IsSystemType)
             {
-                p.Context.Text.Append($"           _{p.Parameter.ParameterType.Name!.Substring(p.Parameter.ParameterType.IsInterface == true ? 1 : 0).GetFirstLowerString()}.Object,");
+                p.Context.Text.Append($"           _{p.Parameter.ParameterType.Name.Substring(p.Parameter.ParameterType.IsInterface == true ? 1 : 0).GetFirstLowerString()}.Object,");
                 p.Context.Text.Append(Environment.NewLine);
             }
         }

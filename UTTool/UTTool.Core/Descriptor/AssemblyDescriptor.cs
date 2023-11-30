@@ -14,7 +14,7 @@ namespace UTTool.Core.Descriptor
         /// <summary>
         /// 
         /// </summary>
-        public Assembly? Assembly { get; set; }
+        public Assembly Assembly { get; set; }
         /// <summary>
         /// 
         /// </summary>
@@ -22,7 +22,7 @@ namespace UTTool.Core.Descriptor
         public AssemblyDescriptor(Assembly assembly)
         {
             Assembly = assembly;
-            Name = Assembly?.GetName().Name!;
+            Name = Assembly?.GetName().Name;
         }
         /// <summary>
         /// 
@@ -43,7 +43,7 @@ namespace UTTool.Core.Descriptor
         internal override void Load(DecoraterContext decoraterContext)
         {
             this.Children = new List<DescripterNode>();
-            decoraterContext.AssemblyDescriptor.Assembly!.ExportedTypes.ToList().ForEach(t =>
+            decoraterContext.AssemblyDescriptor.Assembly.ExportedTypes.ToList().ForEach(t =>
             {
                 var member = new MemberDescripter(t) { NodeType = NodeType.Member, Parent = this };
                 member.Load(decoraterContext);

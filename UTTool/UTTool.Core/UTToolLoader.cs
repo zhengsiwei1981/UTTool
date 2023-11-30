@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -66,7 +67,7 @@ namespace UTTool.Core
             }
             catch (Exception ex)
             {
-                if (ex is not FileLoadException && ex is not LoadAssemblyException)
+                if (ex.GetType() != typeof(FileLoadException) && ex.GetType() != typeof(LoadAssemblyException))
                 {
                     var returnException = new LoadAssemblyException(ex.Message) { ExceptionType = ExceptionType.LoadFailure, AssemblyName = assName };
                     returnException.RTExceptions.Add(new ReflectionTypeLoadSubException() { AssemblyName = assName, Message = ex.Message });
@@ -81,7 +82,7 @@ namespace UTTool.Core
         public void LoadDirectory(string path)
         {
             DirectoryLoadException directoryLoadException = null;
-            var directoryInfo = new DirectoryInfo(path);
+            var directoryInfo = new System.IO.DirectoryInfo(path);
             var dllFiles = directoryInfo.GetFiles("*.dll");
             var loadNumber = 0;
             foreach (var file in dllFiles)

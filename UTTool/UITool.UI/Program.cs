@@ -15,7 +15,7 @@ namespace UITool.UI
 
             Application.ThreadException += Application_ThreadException;
 
-            ApplicationConfiguration.Initialize();
+            //ApplicationConfiguration.Initialize();
             Application.Run(new Index());
         }
 

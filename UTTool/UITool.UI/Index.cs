@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
-using Microsoft.VisualBasic.Devices;
+//using Microsoft.VisualBasic.Devices;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -34,6 +34,11 @@ namespace UITool.UI
         {
             InitializeComponent();
 
+            var textPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Text");
+            if (!Directory.Exists(textPath))
+            {
+                Directory.CreateDirectory(textPath);
+            }
             queryThreadDispatch = new QueryThreadDispatch(uTToolLoader, this.trvQueryList);
 
             documentGenerater.BasicAction = context =>

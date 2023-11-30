@@ -19,7 +19,7 @@ namespace UTTool.Core.Constructor.Initiallization
 
             var node = referenceParameterMapping.Context.DescripterNode.GetRoot().Find(d => d.NodeType == NodeType.Member && ((MemberDescripter)d).BaseType == referenceParameterMapping.Parameter.ParameterType);
 
-            (node as MemberDescripter)!.IsMock = true;
+            (node as MemberDescripter).IsMock = true;
             blankScope.AttachGenerateItem(new BlankMoqInjectionGenerate(node));
             setupScope.AttachGenerateItem(new InjectionGenerate(node));
         }

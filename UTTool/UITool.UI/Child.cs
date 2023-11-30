@@ -35,7 +35,7 @@ namespace UITool.UI
             return x.AssemblyName == y.AssemblyName && x.TargetAssemblyName == y.TargetAssemblyName;
         }
 
-        public int GetHashCode([DisallowNull] ReflectionTypeLoadSubException obj)
+        public int GetHashCode(ReflectionTypeLoadSubException obj)
         {
             return obj.ToString().GetHashCode();
         }

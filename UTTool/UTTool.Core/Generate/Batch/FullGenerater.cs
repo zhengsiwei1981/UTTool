@@ -110,7 +110,7 @@ namespace UTTool.Core.Generate.Batch
         {
             pmList.Where(p => p is ReferenceParameterMapping).ToList().ForEach(p =>
             {
-                Namespaces.Add(p.Parameter.ParameterType.Namespace!);
+                Namespaces.Add(p.Parameter.ParameterType.Namespace);
             });
         }
     }

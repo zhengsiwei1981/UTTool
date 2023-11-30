@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using UTTool.Core.Descriptor;
@@ -15,6 +16,9 @@ namespace UTTool.Core
         {
             AppDomain.CurrentDomain.AssemblyResolve += AssemblyLoadResolve.AssemblyResolve;
         }
+        internal static string BasePath {
+            get; set;
+        }
         /// <summary>
         /// 
         /// </summary>
@@ -24,6 +28,7 @@ namespace UTTool.Core
             Assembly assembly = null;
             try
             {
+                AssemblyLoader.BasePath = Path.GetDirectoryName(path);
                 assembly = Assembly.LoadFrom(path);
                 //try invoke for check whether the assembly is load successed
                 assembly.GetTypes();

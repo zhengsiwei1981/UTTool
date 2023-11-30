@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Data.Common;
 using System.Linq;
 using System.Reflection;
-using System.Reflection.Metadata;
 using System.Security.AccessControl;
 using System.Text;
 using System.Threading.Tasks;
@@ -53,7 +52,7 @@ namespace UTTool.Core.Constructor
             get
             {
                 var typenamespace = this.Parameter.ParameterType.Namespace;
-                return typenamespace!.StartsWith("System") || typenamespace.StartsWith("Microsoft");
+                return typenamespace.StartsWith("System") || typenamespace.StartsWith("Microsoft");
             }
         }
         /// <summary>
