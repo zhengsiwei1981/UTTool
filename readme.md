@@ -20,7 +20,7 @@
 
 #### 怎么使用
 
-  - 下载源代码，然后使用Visual Studio打开，运行UI项目
+  - 下载源代码，然后使用Visual Studio打开项目，运行UI项目即可
   ~~~
     git clone https://github.com/zhengsiwei1981/UTTool.git
   ~~~
