@@ -2,9 +2,10 @@
 
 
 本项目技术栈如下：
-开发工具：Visual Studio 2022 / Jetbrains Rider
-开发语言：C#
-框架：Winform + .Net 7.0
+
+- 开发工具：Visual Studio 2022 / Jetbrains Rider
+- 开发语言：C#
+- 框架：Winform + .Net 7.0
 
 
 
