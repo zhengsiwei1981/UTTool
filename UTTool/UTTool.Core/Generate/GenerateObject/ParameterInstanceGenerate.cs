@@ -36,7 +36,7 @@ namespace UTTool.Core.Generate.GenerateObject
             {
                 var index = 0;
                 var sb = new StringBuilder();
-                if (!param.Type.IsGenericType && !param.Type.IsArray && !param.Type.IsInterface)
+                if (!param.Type.IsGenericType && !param.Type.IsArray && !param.Type.IsInterface && !(param.Type == typeof(System.Data.DataTable)))
                 {
                     var outputSetup = new OutputSetup();
                     sb.Append($"      var {param.ParameterName.GetFirstLowerString()} = new {param.Type.Name}()");
