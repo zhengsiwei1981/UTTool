@@ -39,7 +39,8 @@
     ![image](https://github.com/zhengsiwei1981/UTTool/assets/3821091/d84895b6-5dfa-4af1-9419-35179d2382d9)
 
    
-
+- 如果项目由 Framework4.5或以下创建的话，需要在开发界面编译时选择指定的.net版本
+![99e0c76b3d562e8ddad4424b049c0bc](https://github.com/user-attachments/assets/1c315203-5c75-4d22-ac5c-fa3692d9eedf)
 
 
 
